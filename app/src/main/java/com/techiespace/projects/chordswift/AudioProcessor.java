@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import be.tarsos.dsp.AudioDispatcher;
-import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import be.tarsos.dsp.pitch.PitchDetectionHandler;
-import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 
 public class AudioProcessor extends Activity {
@@ -150,9 +148,6 @@ public class AudioProcessor extends Activity {
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 512);
 
         HashMap<Integer, String> map = createHashMap();
-        String input = "C4";
-        String[] output = {};
-        //String[] input = {"C"};
 
         PitchDetectionHandler pdh = (res, e) -> {
             final float pitchInHz = res.getPitch();

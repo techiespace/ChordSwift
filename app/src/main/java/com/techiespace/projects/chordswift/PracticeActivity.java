@@ -11,7 +11,13 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.techiespace.projects.chordswift.pianoHelpers.Note;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 
 public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChangeListener {
@@ -26,7 +32,7 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
     protected void onCreate(Bundle savedInstanceState) {
         //Remove the title bar
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        this.requestWindowFeature((int) Window.FEATURE_NO_TITLE);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         //Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -45,7 +51,55 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
 
         AudioProcessor Ap = new AudioProcessor(noteText, pianoView);
 
+        //TODO: Figure out the reason for the lag in opening practice activty. This happens even when the midi parser is not present.
+        MidiParser midiParser = new MidiParser(this);
+        Note[] notes = midiParser.parse("CScale.mid");
+        System.out.println("The returned notes array is: ");
+        for (int i = 0; i < notes.length; i++) {
+            System.out.println(notes[i].getNote() + " " + notes[i].getStartTime() + " " + notes[i].getEndTime());
+        }
 
+        //read parsed txt file
+        Note[] parsedNotes = readParsedMidi();
+        System.out.println("Read from parsed txt file into Note object: ");
+        for (int i = 0; i < notes.length; i++) {
+            System.out.println(parsedNotes[i].getNote() + " " + parsedNotes[i].getStartTime() + " " + parsedNotes[i].getEndTime());
+        }
+    }
+
+    private Note[] readParsedMidi() {
+        Note[] notes;
+        ArrayList<Note> noteArrayList = new ArrayList<Note>();
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(getAssets().open("CScale.txt")));
+
+            // do reading, usually loop until end of file reading
+            String mLine;
+            while ((mLine = reader.readLine()) != null) {
+                //process line
+                String[] noteStr = mLine.split(" ");
+                int startTime = Integer.parseInt(noteStr[1]);
+                int stopTime = Integer.parseInt(noteStr[2]);
+                String noteName = noteStr[0];
+                Note note = new Note(startTime, stopTime, noteName);
+                noteArrayList.add(note);
+            }
+        } catch (IOException e) {
+            //log the exception
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    //log the exception
+                }
+            }
+        }
+        notes = noteArrayList.toArray(new Note[noteArrayList.size()]);
+        return notes;
     }
 
     @Override
