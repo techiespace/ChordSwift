@@ -11,7 +11,16 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.techiespace.projects.chordswift.pianoHelpers.Note;
+import com.techiespace.projects.chordswift.pianoHelpers.PianoKey;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoView;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 
 public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChangeListener {
@@ -20,13 +29,43 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
     private SeekBar seekbar;
     private int scrollProgress = 0;
     private PianoView pianoView;
+    public ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
+    ArrayList<PianoKey[]> whitePianoKeys;
+    ArrayList<PianoKey[]> blackPianoKeys;
+    private ArrayList<Note> noteList = new ArrayList<Note>();
+
+    protected void init() {
+        noteList.add(new Note(0, 1000, "C4"));
+        noteList.add(new Note(1000, 2000, "D4"));
+        noteList.add(new Note(2000, 3000, "E4"));
+        noteList.add(new Note(3000, 4000, "F4"));
+        noteList.add(new Note(4000, 5000, "G4"));
+        noteList.add(new Note(5000, 6000, "A4"));
+        noteList.add(new Note(6000, 7000, "B4"));
+    }
+
+    protected void Play() {
+        if (noteList != null) {
+            Log.v("practice activity ", String.valueOf(new Date()));
+            for (Note note : noteList) {
+                RunnableNote rn = new RunnableNote(note, pianoView);
+                ScheduledFuture scheduledFuture = scheduledThreadPool.schedule(rn, note.getStartTime() / 1000, TimeUnit.SECONDS);
+//                    try {
+//                        Thread.sleep(note.getStartTime());
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+                // }
+            }
+        }
+    }
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Remove the title bar
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        this.requestWindowFeature((int) Window.FEATURE_NO_TITLE);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         //Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -41,11 +80,11 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
         seekbar = findViewById(R.id.sb);
         seekbar.setThumbOffset((int) convertDpToPixel(SEEKBAR_OFFSET_SIZE));
         seekbar.setOnSeekBarChangeListener(this);
-
-
-        AudioProcessor Ap = new AudioProcessor(noteText, pianoView);
-
-
+        // mediaPlayer = MediaPlayer(this,)
+        //Calling the initializing function
+        init();
+        if (savedInstanceState != null)
+            Play();
     }
 
     @Override
@@ -55,6 +94,7 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
         super.onResume();
+
     }
 
 
@@ -80,5 +120,19 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
+//    private PianoKey findPianoKey(String input) {
+//        ArrayList<PianoKey[]> pianoKeys;
+//        pianoKeys = pianoView.getWhiteStaticKeys();
+//        if(pianoKeys==null)
+//            Log.v("PracticeActivity  ","Static white Piano key is null");
+////        for (PianoKey[] pianokey : pianoKeys) {
+////            for (int i = 0; i < pianokey.length; i++) {
+////                if (pianokey[i].getLetterName().equals(input)) {
+////                    return pianokey[i];
+////                }
+////            }
+////        }
+//        return null;
+//    }
 
 }

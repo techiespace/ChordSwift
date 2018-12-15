@@ -11,7 +11,6 @@ import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.techiespace.projects.chordswift.R;
@@ -25,7 +24,8 @@ public class PianoView extends View {
     private final static String TAG = "PianoView";
 
     private Piano piano = null;
-    private static ArrayList<PianoKey[]> statkeys;
+    private static ArrayList<PianoKey[]> whiteStaticKeys;
+    private static ArrayList<PianoKey[]> blackStaticKeys;
 
     private ArrayList<PianoKey[]> whitePianoKeys;
     private ArrayList<PianoKey[]> blackPianoKeys;
@@ -86,6 +86,12 @@ public class PianoView extends View {
         paint.setStyle(Paint.Style.FILL);
         //Initialize the square
         square = new RectF();
+
+        //This is used becuase it is dicovered that
+
+        if (piano == null)
+            piano = new Piano(context, scale);
+
     }
 
     @Override
@@ -126,9 +132,11 @@ public class PianoView extends View {
             minRange = 0;
             maxRange = layoutWidth;
             piano = new Piano(context, scale);
+            whiteStaticKeys = piano.getWhitePianoKeys();    //not null
+            blackStaticKeys = piano.getBlackPianoKeys();
+
             //Get white keys
             whitePianoKeys = piano.getWhitePianoKeys();
-            statkeys =  piano.getWhitePianoKeys();
             //Get Black Keys
             blackPianoKeys = piano.getBlackPianoKeys();
 
@@ -168,6 +176,7 @@ public class PianoView extends View {
                 }
             }
         }
+
         if (!isInitFinish && piano != null) {
             isInitFinish = true;
 
@@ -213,100 +222,100 @@ public class PianoView extends View {
         }
     }
 */
-
-    @Override
-    public boolean performClick() {
-        return super.performClick();
-    }
-
-    private void handleDown(int which, MotionEvent event) {
-        int x = (int) event.getX(which) + this.getScrollX();
-        int y = (int) event.getY(which);
-        //检查白键
-        for (int i = 0; i < whitePianoKeys.size(); i++) {
-            for (PianoKey key : whitePianoKeys.get(i)) {
-                if (!key.isPressed() && key.contains(x, y)) {
-                    handleWhiteKeyDown(which, event, key);
-                }
-            }
-        }
-        //检查黑键
-        for (int i = 0; i < blackPianoKeys.size(); i++) {
-            for (PianoKey key : blackPianoKeys.get(i)) {
-                if (!key.isPressed() && key.contains(x, y)) {
-                    handleBlackKeyDown(which, event, key);
-                }
-            }
-        }
-    }
-
-    private void handleWhiteKeyDown(int which, MotionEvent event, PianoKey key) {
-        key.getKeyDrawable().setState(new int[] { android.R.attr.state_pressed });
-        key.setPressed(true);
-        if (event != null) {
-            key.setFingerID(event.getPointerId(which));
-        }
-        pressedKeys.add(key);
-        invalidate();
-
-    }
-
-
-
-    private void handleBlackKeyDown(int which, MotionEvent event, PianoKey key) {
-        key.getKeyDrawable().setState(new int[] { android.R.attr.state_pressed });
-        key.setPressed(true);
-        if (event != null) {
-            key.setFingerID(event.getPointerId(which));
-        }
-        pressedKeys.add(key);
-        invalidate();
-
-    }
-
-
-    private void handleMove(int which, MotionEvent event) {
-        int x = (int) event.getX(which) + this.getScrollX();
-        int y = (int) event.getY(which);
-        for (PianoKey key : pressedKeys) {
-            if (key.getFingerID() == event.getPointerId(which)) {
-                if (!key.contains(x, y)) {
-                    key.getKeyDrawable().setState(new int[] { -android.R.attr.state_pressed });
-                    invalidate();
-                    key.setPressed(false);
-                    key.resetFingerID();
-                    pressedKeys.remove(key);
-                }
-            }
-        }
-    }
-
-
-    private void handlePointerUp(int pointerId) {
-        for (PianoKey key : pressedKeys) {
-            if (key.getFingerID() == pointerId) {
-                key.setPressed(false);
-                key.resetFingerID();
-                key.getKeyDrawable().setState(new int[] { -android.R.attr.state_pressed });
-                invalidate();
-                pressedKeys.remove(key);
-                break;
-            }
-        }
-    }
-
-
-    private void handleUp() {
-        if (pressedKeys.size() > 0) {
-            for (PianoKey key : pressedKeys) {
-                key.getKeyDrawable().setState(new int[] { -android.R.attr.state_pressed });
-                key.setPressed(false);
-                invalidate();
-            }
-            pressedKeys.clear();
-        }
-    }
-
+//
+//    @Override
+//    public boolean performClick() {
+//        return super.performClick();
+//    }
+//
+//    private void handleDown(int which, MotionEvent event) {
+//        int x = (int) event.getX(which) + this.getScrollX();
+//        int y = (int) event.getY(which);
+//        //检查白键
+//        for (int i = 0; i < whitePianoKeys.size(); i++) {
+//            for (PianoKey key : whitePianoKeys.get(i)) {
+//                if (!key.isPressed() && key.contains(x, y)) {
+//                    handleWhiteKeyDown(which, event, key);
+//                }
+//            }
+//        }
+//        //检查黑键
+//        for (int i = 0; i < blackPianoKeys.size(); i++) {
+//            for (PianoKey key : blackPianoKeys.get(i)) {
+//                if (!key.isPressed() && key.contains(x, y)) {
+//                    handleBlackKeyDown(which, event, key);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void handleWhiteKeyDown(int which, MotionEvent event, PianoKey key) {
+//        key.getKeyDrawable().setState(new int[] { android.R.attr.state_pressed });
+//        key.setPressed(true);
+//        if (event != null) {
+//            key.setFingerID(event.getPointerId(which));
+//        }
+//        pressedKeys.add(key);
+//        invalidate();
+//
+//    }
+//
+//
+//
+//    private void handleBlackKeyDown(int which, MotionEvent event, PianoKey key) {
+//        key.getKeyDrawable().setState(new int[] { android.R.attr.state_pressed });
+//        key.setPressed(true);
+//        if (event != null) {
+//            key.setFingerID(event.getPointerId(which));
+//        }
+//        pressedKeys.add(key);
+//        invalidate();
+//
+//    }
+//
+//
+//    private void handleMove(int which, MotionEvent event) {
+//        int x = (int) event.getX(which) + this.getScrollX();
+//        int y = (int) event.getY(which);
+//        for (PianoKey key : pressedKeys) {
+//            if (key.getFingerID() == event.getPointerId(which)) {
+//                if (!key.contains(x, y)) {
+//                    key.getKeyDrawable().setState(new int[] { -android.R.attr.state_pressed });
+//                    invalidate();
+//                    key.setPressed(false);
+//                    key.resetFingerID();
+//                    pressedKeys.remove(key);
+//                }
+//            }
+//        }
+//    }
+//
+//
+//    private void handlePointerUp(int pointerId) {
+//        for (PianoKey key : pressedKeys) {
+//            if (key.getFingerID() == pointerId) {
+//                key.setPressed(false);
+//                key.resetFingerID();
+//                key.getKeyDrawable().setState(new int[] { -android.R.attr.state_pressed });
+//                invalidate();
+//                pressedKeys.remove(key);
+//                break;
+//            }
+//        }
+//    }
+//
+//
+//    private void handleUp() {
+//        if (pressedKeys.size() > 0) {
+//            for (PianoKey key : pressedKeys) {
+//                key.getKeyDrawable().setState(new int[] { -android.R.attr.state_pressed });
+//                key.setPressed(false);
+//                invalidate();
+//            }
+//            pressedKeys.clear();
+//        }
+//    }
+//
 
     public int getPianoWidth() {
         if (piano != null) {
@@ -379,12 +388,96 @@ public class PianoView extends View {
 
     }
 
-    public ArrayList<PianoKey[]> getPianoKeys()
+//    public ArrayList<PianoKey[]> getWhiteStaticKeys()
+//    {
+//        if(whiteStaticKeys == null)
+//            Log.v("Pianoview  ","statkey is null");
+//        return whiteStaticKeys;
+//    }
+//    public ArrayList<PianoKey[]> getBlackStaticKeys()
+//    {
+//        if(blackStaticKeys == null)
+//            Log.v("Pianoview  ","statkey is null");
+//        return blackStaticKeys;
+//    }
+
+
+    //Hnadle updown clicks
+    public void PerformClickDown(String note)
     {
-        if(this.statkeys == null)
-            Log.v("hdsj  ","statkey is null");
-        return this.statkeys;
+        blackPianoKeys = piano.getBlackPianoKeys();
+        whitePianoKeys = piano.getWhitePianoKeys();
+
+        if (note.charAt(1) == '#') {
+            for (PianoKey[] pianokey : blackPianoKeys) {
+                for (int i = 0; i < pianokey.length; i++) {
+                    if (pianokey[i].getLetterName().equals(note)) {
+
+                        this.performButtonDownClick(pianokey[i]);
+
+                    }
+                }
+            }
+        } else {
+            for (PianoKey[] pianokey : whitePianoKeys) {
+                for (int i = 0; i < pianokey.length; i++) {
+                    if (pianokey[i].getLetterName().equals(note)) {
+                        this.performButtonDownClick(pianokey[i]);
+
+                    }
+                }
+            }
+
+        }
+
     }
+
+    public void PerformClickUp(String note) {
+        blackPianoKeys = piano.getBlackPianoKeys();
+        whitePianoKeys = piano.getWhitePianoKeys();
+
+        if (note.charAt(1) == '#') {
+            for (PianoKey[] pianokey : blackPianoKeys) {
+                for (int i = 0; i < pianokey.length; i++) {
+                    if (pianokey[i].getLetterName().equals(note)) {
+
+                        this.performButtonUpClick(pianokey[i]);
+
+                    }
+                }
+            }
+        } else {
+            for (PianoKey[] pianokey : whitePianoKeys) {
+                for (int i = 0; i < pianokey.length; i++) {
+                    if (pianokey[i].getLetterName().equals(note)) {
+                        this.performButtonUpClick(pianokey[i]);
+
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    public void performButtonDownClick(PianoKey key) {
+        autoScroll(key);
+        key.getKeyDrawable().setState(new int[]{android.R.attr.state_pressed});
+        this.invalidate();
+    }
+
+    public void performButtonUpClick(PianoKey key) {
+        autoScroll(key);
+        key.getKeyDrawable().setState(new int[]{-android.R.attr.state_pressed});
+        this.invalidate();
+
+    }
+
+
+
+
+
+
 
 
     @Override protected void onRestoreInstanceState(Parcelable state) {
