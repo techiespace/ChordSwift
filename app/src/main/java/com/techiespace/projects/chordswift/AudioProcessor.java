@@ -147,9 +147,6 @@ public class AudioProcessor extends Activity {
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 512);
 
         HashMap<Integer, String> map = createHashMap();
-        String input = "C4";
-        String[] output = {};
-        //String[] input = {"C"};
 
         PitchDetectionHandler pdh = (res, e) -> {
             final float pitchInHz = res.getPitch();
