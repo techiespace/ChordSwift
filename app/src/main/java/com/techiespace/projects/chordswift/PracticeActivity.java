@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Window;
@@ -13,20 +14,12 @@ import android.widget.TextView;
 
 import com.techiespace.projects.chordswift.pianoHelpers.Note;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoKey;
-import com.techiespace.projects.chordswift.pianoHelpers.Note;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoView;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 
 public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChangeListener {
@@ -35,19 +28,22 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
     private SeekBar seekbar;
     private int scrollProgress = 0;
     private PianoView pianoView;
-    public ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
+    public ExecutorService executor = Executors.newCachedThreadPool();
     ArrayList<PianoKey[]> whitePianoKeys;
     ArrayList<PianoKey[]> blackPianoKeys;
     private ArrayList<Note> noteList = new ArrayList<Note>();
+    Handler handler = new Handler();
 
     protected void init() {
-        noteList.add(new Note(0, 1000, "C4"));
+        /*noteList.add(new Note(0, 1000, "C4"));
         noteList.add(new Note(1000, 2000, "D4"));
         noteList.add(new Note(2000, 3000, "E4"));
         noteList.add(new Note(3000, 4000, "F4"));
         noteList.add(new Note(4000, 5000, "G4"));
         noteList.add(new Note(5000, 6000, "A4"));
-        noteList.add(new Note(6000, 7000, "B4"));
+        noteList.add(new Note(6000, 7000, "B4"));*/
+        MidiParser midiParser = new MidiParser(this);
+        noteList = midiParser.parse("CScaleNew.mid");
     }
 
     protected void Play() {
@@ -55,7 +51,13 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
             Log.v("practice activity ", String.valueOf(new Date()));
             for (Note note : noteList) {
                 RunnableNote rn = new RunnableNote(note, pianoView);
-                ScheduledFuture scheduledFuture = scheduledThreadPool.schedule(rn, note.getStartTime() / 1000, TimeUnit.SECONDS);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        executor.execute(rn);
+
+                    }
+                }, note.getStartTime());
 //                    try {
 //                        Thread.sleep(note.getStartTime());
 //                    } catch (InterruptedException e) {

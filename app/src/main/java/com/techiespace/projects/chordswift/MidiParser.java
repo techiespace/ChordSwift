@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class MidiParser {
     Context context;
     Note[] notes;
+    ArrayList<Note> noteArrayList = new ArrayList<Note>();
 
     MidiParser(Context context) {
         this.context = context;
@@ -47,14 +48,14 @@ public class MidiParser {
 //        return String.format("%02d:%02d:%02d.%03d", millis / 60 / 60 / 1000, (millis / 60 / 1000) % 60, (millis / 1000) % 60, millis % 1000);
     }
 
-    public Note[] parse(String file) {
+    public ArrayList<Note> parse(String file) {
         /*if(args.length < 1) {
             System.out.println("usage: java MidiParser [-t bpm] [-n track] inputfile");
             System.exit(1);
         }*/
 
         try {
-            ArrayList<Note> noteArrayList = new ArrayList<Note>();
+
             int track = -1;
             double bpm = -120.0;
 
@@ -197,11 +198,11 @@ public class MidiParser {
             }
 
             inputStream.close();
-            notes = noteArrayList.toArray(new Note[noteArrayList.size()]);
+            //notes = noteArrayList.toArray(new Note[noteArrayList.size()]);
         } catch (Exception e) {
             e.printStackTrace(System.err);
             System.exit(1);
         }
-        return notes;
+        return noteArrayList;
     }
 }

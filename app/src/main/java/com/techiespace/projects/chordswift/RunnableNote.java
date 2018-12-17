@@ -27,6 +27,7 @@ public class RunnableNote extends Activity implements Runnable {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
                 Log.v("Start  " + note, String.valueOf(System.currentTimeMillis()));
                 pianoView.PerformClickDown(note);
 
