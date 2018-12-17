@@ -68,10 +68,10 @@ Piano {
             Drawable whiteDrawable = ContextCompat.getDrawable(context, R.drawable.white_piano_key);
             blackKeyWidth = blackDrawable.getIntrinsicWidth();
             blackKeyWidth/=2;
-            blackKeyHeight = (int) ((float) blackDrawable.getIntrinsicHeight() * scale);
+            blackKeyHeight = (int) ((float) blackDrawable.getIntrinsicHeight() * scale) * 2 / 3;
             whiteKeyWidth = whiteDrawable.getIntrinsicWidth();
             whiteKeyWidth/=2;
-            whiteKeyHeight = (int) ((float) whiteDrawable.getIntrinsicHeight() * scale);
+            whiteKeyHeight = (int) ((float) whiteDrawable.getIntrinsicHeight() * scale) * 2 / 3;
 
           //  whiteKeyHeight = whiteKeyWidth/2;
             for (int i = 0; i < BLACK_PIANO_KEY_GROUPS; i++) {

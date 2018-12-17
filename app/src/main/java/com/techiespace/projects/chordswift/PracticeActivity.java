@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Window;
@@ -12,12 +13,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.techiespace.projects.chordswift.pianoHelpers.Note;
+import com.techiespace.projects.chordswift.pianoHelpers.PianoKey;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChangeListener {
@@ -26,6 +28,45 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
     private SeekBar seekbar;
     private int scrollProgress = 0;
     private PianoView pianoView;
+    public ExecutorService executor = Executors.newCachedThreadPool();
+    ArrayList<PianoKey[]> whitePianoKeys;
+    ArrayList<PianoKey[]> blackPianoKeys;
+    private ArrayList<Note> noteList = new ArrayList<Note>();
+    Handler handler = new Handler();
+
+    protected void init() {
+        /*noteList.add(new Note(0, 1000, "C4"));
+        noteList.add(new Note(1000, 2000, "D4"));
+        noteList.add(new Note(2000, 3000, "E4"));
+        noteList.add(new Note(3000, 4000, "F4"));
+        noteList.add(new Note(4000, 5000, "G4"));
+        noteList.add(new Note(5000, 6000, "A4"));
+        noteList.add(new Note(6000, 7000, "B4"));*/
+        MidiParser midiParser = new MidiParser(this);
+        noteList = midiParser.parse("CScaleNew.mid");
+    }
+
+    protected void Play() {
+        if (noteList != null) {
+            Log.v("practice activity ", String.valueOf(new Date()));
+            for (Note note : noteList) {
+                RunnableNote rn = new RunnableNote(note, pianoView);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        executor.execute(rn);
+
+                    }
+                }, note.getStartTime());
+//                    try {
+//                        Thread.sleep(note.getStartTime());
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+                // }
+            }
+        }
+    }
+
 
 
     @Override
@@ -47,59 +88,11 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
         seekbar = findViewById(R.id.sb);
         seekbar.setThumbOffset((int) convertDpToPixel(SEEKBAR_OFFSET_SIZE));
         seekbar.setOnSeekBarChangeListener(this);
-
-
-        AudioProcessor Ap = new AudioProcessor(noteText, pianoView);
-
-        //TODO: Figure out the reason for the lag in opening practice activty. This happens even when the midi parser is not present.
-        MidiParser midiParser = new MidiParser(this);
-        Note[] notes = midiParser.parse("CScale.mid");
-        System.out.println("The returned notes array is: ");
-        for (int i = 0; i < notes.length; i++) {
-            System.out.println(notes[i].getNote() + " " + notes[i].getStartTime() + " " + notes[i].getEndTime());
-        }
-
-        //read parsed txt file
-        Note[] parsedNotes = readParsedMidi();
-        System.out.println("Read from parsed txt file into Note object: ");
-        for (int i = 0; i < notes.length; i++) {
-            System.out.println(parsedNotes[i].getNote() + " " + parsedNotes[i].getStartTime() + " " + parsedNotes[i].getEndTime());
-        }
-    }
-
-    private Note[] readParsedMidi() {
-        Note[] notes;
-        ArrayList<Note> noteArrayList = new ArrayList<Note>();
-
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(
-                    new InputStreamReader(getAssets().open("CScale.txt")));
-
-            // do reading, usually loop until end of file reading
-            String mLine;
-            while ((mLine = reader.readLine()) != null) {
-                //process line
-                String[] noteStr = mLine.split(" ");
-                int startTime = Integer.parseInt(noteStr[1]);
-                int stopTime = Integer.parseInt(noteStr[2]);
-                String noteName = noteStr[0];
-                Note note = new Note(startTime, stopTime, noteName);
-                noteArrayList.add(note);
-            }
-        } catch (IOException e) {
-            //log the exception
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    //log the exception
-                }
-            }
-        }
-        notes = noteArrayList.toArray(new Note[noteArrayList.size()]);
-        return notes;
+        // mediaPlayer = MediaPlayer(this,)
+        //Calling the initializing function
+        init();
+        if (savedInstanceState != null)
+            Play();
     }
 
     @Override
@@ -134,5 +127,19 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
+//    private PianoKey findPianoKey(String input) {
+//        ArrayList<PianoKey[]> pianoKeys;
+//        pianoKeys = pianoView.getWhiteStaticKeys();
+//        if(pianoKeys==null)
+//            Log.v("PracticeActivity  ","Static white Piano key is null");
+////        for (PianoKey[] pianokey : pianoKeys) {
+////            for (int i = 0; i < pianokey.length; i++) {
+////                if (pianokey[i].getLetterName().equals(input)) {
+////                    return pianokey[i];
+////                }
+////            }
+////        }
+//        return null;
+//    }
 
 }

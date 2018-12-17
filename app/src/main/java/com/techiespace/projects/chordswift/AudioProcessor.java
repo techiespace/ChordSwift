@@ -6,7 +6,6 @@ import android.widget.TextView;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoKey;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import be.tarsos.dsp.AudioDispatcher;
@@ -148,6 +147,9 @@ public class AudioProcessor extends Activity {
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 512);
 
         HashMap<Integer, String> map = createHashMap();
+        String input = "C4";
+        String[] output = {};
+        //String[] input = {"C"};
 
         PitchDetectionHandler pdh = (res, e) -> {
             final float pitchInHz = res.getPitch();
@@ -178,9 +180,8 @@ public class AudioProcessor extends Activity {
 
                 keyToPlay.getKeyDrawable().setState(new int[]{android.R.attr.state_pressed});
                 pianoView.invalidate();
-
-                keyToPlay.getKeyDrawable().setState(new int[]{-android.R.attr.state_pressed});
-                pianoView.invalidate();
+//                keyToPlay.getKeyDrawable().setState(new int[]{-android.R.attr.state_pressed});
+//                pianoView.invalidate();
                 countNoteOccurance = 0;
                 if (inputIndex < input.length - 1) {
                     inputIndex++;
@@ -193,7 +194,15 @@ public class AudioProcessor extends Activity {
     }
 
     private PianoKey findPianoKey(String input) {
-        ArrayList<PianoKey[]> pianoKeys = pianoView.getPianoKeys();
+        /*ArrayList<PianoKey[]> pianoKeys;
+         *//*if(input.charAt(1)=='#')//The input in black key
+        {
+            pianoKeys = pianoView.getBlackStaticKeys();
+        }
+       //The input is a white piano key
+        else {
+            pianoKeys = pianoView.getWhiteStaticKeys();
+        }*//*
 
         for (PianoKey[] pianokey : pianoKeys) {
             for (int i = 0; i < pianokey.length; i++) {
@@ -201,7 +210,7 @@ public class AudioProcessor extends Activity {
                     return pianokey[i];
                 }
             }
-        }
+        }*/
         return null;
     }
 
