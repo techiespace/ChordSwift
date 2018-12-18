@@ -43,7 +43,7 @@ public class PracticeActivity extends Activity implements SeekBar.OnSeekBarChang
         noteList.add(new Note(5000, 6000, "A4"));
         noteList.add(new Note(6000, 7000, "B4"));*/
         MidiParser midiParser = new MidiParser(this);
-        noteList = midiParser.parse("CScaleNew.mid");
+        noteList = midiParser.parse("twinkle_twinkle.mid");
     }
 
     protected void Play() {

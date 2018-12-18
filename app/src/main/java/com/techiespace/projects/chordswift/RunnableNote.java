@@ -3,6 +3,7 @@ package com.techiespace.projects.chordswift;
 import android.app.Activity;
 import android.util.Log;
 
+import com.techiespace.projects.chordswift.Utils.AudioUtils;
 import com.techiespace.projects.chordswift.pianoHelpers.Note;
 import com.techiespace.projects.chordswift.pianoHelpers.PianoView;
 
@@ -12,12 +13,15 @@ public class RunnableNote extends Activity implements Runnable {
     int startTime;
     int endTime;
     PianoView pianoView;
+    AudioUtils utils;
 
     public RunnableNote(Note note, PianoView view) {
         this.startTime = note.getStartTime();
         this.endTime = note.getEndTime();
         this.note = note.getNote();
         this.pianoView = view;
+        utils = pianoView.getUtils();
+
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.techiespace.projects.chordswift.R;
+import com.techiespace.projects.chordswift.Utils.AudioUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,6 +31,7 @@ public class PianoView extends View {
     private ArrayList<PianoKey[]> whitePianoKeys;
     private ArrayList<PianoKey[]> blackPianoKeys;
 
+    private AudioUtils utils = null;
 
     //Thread Safe array list of the keys that are pressed
     private CopyOnWriteArrayList<PianoKey> pressedKeys = new CopyOnWriteArrayList<>();
@@ -142,6 +144,19 @@ public class PianoView extends View {
 
 
         }
+        if (utils == null) {
+            if (maxStream > 0) {
+                utils = AudioUtils.getInstance(getContext(), maxStream);
+            } else {
+                utils = AudioUtils.getInstance(getContext());
+            }
+            try {
+                utils.loadMusic(piano);
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+
 
         if (whitePianoKeys != null) {
            // Log.v("jdbkfhsd  ","whitepianokeynot null");
@@ -464,6 +479,8 @@ public class PianoView extends View {
         autoScroll(key);
         key.getKeyDrawable().setState(new int[]{android.R.attr.state_pressed});
         this.invalidate();
+
+        utils.playMusic(key);
     }
 
     public void performButtonUpClick(PianoKey key) {
@@ -472,6 +489,11 @@ public class PianoView extends View {
         this.invalidate();
 
     }
+
+    public AudioUtils getUtils() {
+        return this.utils;
+    }
+
 
 
 

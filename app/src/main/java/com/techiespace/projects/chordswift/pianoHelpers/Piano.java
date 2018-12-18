@@ -90,7 +90,7 @@ Piano {
                     keys[j].setType(PianoKeyType.BLACK);
                     keys[j].setGroup(i);
                     keys[j].setPositionOfGroup(j);
-                    // keys[j].setVoiceId(getVoiceFromResources("b" + i + j));
+                    keys[j].setVoiceId(getVoiceFromResources("b" + i + j));
                     keys[j].setPressed(false);
                     keys[j].setKeyDrawable(
                             new ScaleDrawable(ContextCompat.getDrawable(context, R.drawable.black_piano_key),
@@ -122,7 +122,7 @@ Piano {
                     mKeys[j].setType(PianoKeyType.WHITE);
                     mKeys[j].setGroup(i);
                     mKeys[j].setPositionOfGroup(j);
-                    // mKeys[j].setVoiceId(getVoiceFromResources("w" + i + j));
+                    mKeys[j].setVoiceId(getVoiceFromResources("w" + i + j));
                     mKeys[j].setPressed(false);
                     mKeys[j].setKeyDrawable(
                             new ScaleDrawable(ContextCompat.getDrawable(context, R.drawable.white_piano_key),
@@ -309,6 +309,11 @@ Piano {
                 (7 * group - 4 + whiteOffset + blackOffset + positionOfGroup) * whiteKeyWidth
                         + blackKeyWidth / 2, blackKeyHeight);
     }
+
+    private int getVoiceFromResources(String voiceName) {
+        return context.getResources().getIdentifier(voiceName, "raw", context.getPackageName());
+    }
+
 
 
 
