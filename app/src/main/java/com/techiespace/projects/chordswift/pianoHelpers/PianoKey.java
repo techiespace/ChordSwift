@@ -24,7 +24,7 @@ public class PianoKey
     private Drawable keyDrawable;
 
     //Sound attached
-    //private int voiceId;
+    private int voiceId;
 
     //whether the key is pressed or not default = false
     private boolean isPressed;
@@ -80,13 +80,13 @@ public class PianoKey
         this.keyDrawable = keyDrawable;
     }
 
-//    public int getVoiceId() {
-//        return voiceId;
-//    }
-//
-//    public void setVoiceId(int voiceId) {
-//        this.voiceId = voiceId;
-//    }
+    public int getVoiceId() {
+        return voiceId;
+    }
+
+    public void setVoiceId(int voiceId) {
+        this.voiceId = voiceId;
+    }
 
     public boolean isPressed() {
         return isPressed;
