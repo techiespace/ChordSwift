@@ -66,12 +66,12 @@ Piano {
         if (scale > 0) {
             Drawable blackDrawable = ContextCompat.getDrawable(context, R.drawable.black_piano_key);
             Drawable whiteDrawable = ContextCompat.getDrawable(context, R.drawable.white_piano_key);
-            blackKeyWidth = blackDrawable.getIntrinsicWidth();
-            blackKeyWidth/=2;
-            blackKeyHeight = (int) ((float) blackDrawable.getIntrinsicHeight() * scale) * 2 / 3;
-            whiteKeyWidth = whiteDrawable.getIntrinsicWidth();
-            whiteKeyWidth/=2;
-            whiteKeyHeight = (int) ((float) whiteDrawable.getIntrinsicHeight() * scale) * 2 / 3;
+            blackKeyWidth = blackDrawable.getIntrinsicWidth() / 3;
+
+            blackKeyHeight = (int) ((float) blackDrawable.getIntrinsicHeight() * scale) / 3;
+            whiteKeyWidth = whiteDrawable.getIntrinsicWidth() / 3;
+
+            whiteKeyHeight = (int) ((float) whiteDrawable.getIntrinsicHeight() * scale) / 3;
 
           //  whiteKeyHeight = whiteKeyWidth/2;
             for (int i = 0; i < BLACK_PIANO_KEY_GROUPS; i++) {
@@ -98,6 +98,33 @@ Piano {
                     setBlackKeyDrawableBounds(i, j, keys[j].getKeyDrawable());
                     areaOfKey[0] = keys[j].getKeyDrawable().getBounds();
                     keys[j].setAreaOfKey(areaOfKey);
+                    if (i == 0) {
+                        keys[0].setLetterName("A#0");
+                    } else {
+                        switch (j) {
+                            case 0:
+
+                                keys[j].setLetterName("C#" + i);
+                                break;
+                            case 1:
+
+                                keys[j].setLetterName("D#" + i);
+                                break;
+                            case 2:
+
+                                keys[j].setLetterName("F#" + i);
+                                break;
+                            case 3:
+
+                                keys[j].setLetterName("G#" + i);
+                                break;
+                            case 4:
+
+                                keys[j].setLetterName("A#" + i);
+                                break;
+
+                        }
+                    }
 
                 }
                 blackPianoKeys.add(keys);
